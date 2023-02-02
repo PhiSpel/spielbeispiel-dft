@@ -1,155 +1,45 @@
 import streamlit as st
-# caching option only for reset-button
-# from streamlit import caching
-
+from streamlit import session_state as state
 import numpy as np
-# import math
-
+from scipy.io import wavfile as wav
 import matplotlib.pyplot as plt
-# from scipy import fft
-
-# import matplotlib.pyplot as plt
-# from matplotlib.patches import Polygon
-import matplotlib.font_manager
-
-# make sure the humor sans font is found. This only needs to be done once
-# on a system, but it is done here at start up for usage on share.streamlit.io.
-matplotlib.font_manager.findfont('Humor Sans', rebuild_if_missing=True)
 
 st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
-
-
-#############################################
-# Define the function that updates the plot #
-#############################################
-
-# To Do: Why does caching update_plot hang?
-# @st.cache(suppress_st_warning=True)
-def update_plot(x1, y1):
-    # Creates a Matplotlib plot if the dictionary st.session_state.handles is empty, otherwise
-    # updates a Matplotlib plot by modifying the plot handles stored in st.session_state.handles.
-    # The figure is stored in st.session_state.fig.
-
-    x2, y2 = scale_to_frequency(x1, y1)
-
-    handles = st.session_state.handles
-
-    ax1 = st.session_state.mpl_fig.axes[0]
-    ax2 = st.session_state.mpl_fig.axes[1]
-
-    # if the dictionary of plot handles is empty, the plot does not exist yet. We create it. Otherwise the plot exists,
-    # and we can update the plot handles in fs, without having to redraw everything (better performance).
-    if not handles:
-        #######################
-        # Initialize the plot #
-        #######################
-
-        # plot the data points
-        handles["timescale"] = ax1.plot(1, 1,
-                                        x1, y1,
-                                        color='g',
-                                        linewidth=0,
-                                        marker='o',
-                                        ms=1,
-                                        label='timescale')[0]  # .format(degree))[0]
-
-        # plot f and append the plot handle
-        handles["frequencyscale"] = ax2.plot(1, 2,
-                                             x2, y2,
-                                             color='b',
-                                             label="frequencyscale")[0]
-
-        ###############################
-        # Beautify the plot some more #
-        ###############################
-
-        plt.title('Approximation of a series of data points')
-        plt.xlabel('x', horizontalalignment='right', x=1)
-        plt.ylabel('y', horizontalalignment='right', x=0, y=1)
-
-        # set the z order of the axes spines
-        # for k, spine in ax.spines.items():
-        #    spine.set_zorder(0)
-
-        # set the axes locations and style
-        # ax.spines['top'].set_color('none')
-        # ax.spines['bottom'].set_position(('data', 0))
-        # ax.spines['right'].set_color('none')
-
-    else:
-        ###################
-        # Update the plot #
-        ###################
-
-        # Update the data points plot
-        handles["timescale"].set_xdata(x1)
-        handles["timescale"].set_ydata(y1)
-
-        # update the input plot
-        handles["frequencyscale"].set_xdata(x2)
-        handles["frequencyscale"].set_ydata(y2)
-
-    # set x and y ticks, labels and limits respectively
-    xticks = []
-    xticklabels = [str(x) for x in xticks]
-    ax1.set_xticks(xticks)
-    ax1.set_xticklabels(xticklabels)
-    yticks = []
-    yticklabels = [str(x) for x in yticks]
-    ax1.set_yticks(yticks)
-    ax1.set_yticklabels(yticklabels)
-
-    # set the x and y limits
-    ax1.set_xlim([min(x1) - 0.5, max(x1) + 0.5])
-    ax1.set_ylim([min(y1) - 0.5, max(y1) + 0.5])
-
-    # show legend
-    legend_handles = [handles["timescale"]]
-    ax1.legend(handles=legend_handles,
-               loc='upper center',
-               bbox_to_anchor=(0.5, -0.15),
-               ncol=2)
-
-    # make all changes visible
-    st.session_state.mpl_fig.canvas.draw()
-
-
-def scale_to_frequency(x1, y1):
-    x2 = np.linspace(0, n)
-    y2 = np.fft.fft(y1)
-    return x2, y2
-
-
-def clear_figure():
-    del st.session_state['mpl_fig']
-    del st.session_state['handles']
-
 
 ###############################################################################
 # main
 ###############################################################################
+file_input = st.sidebar.checkbox(label='Upload a file', value=False)
+if file_input:
+    wavfile = st.sidebar.file_uploader(
+        label='input your file', accept_multiple_files=False, key='mp3file', type=['mp3', 'wav'])
+else:
+    state.frequency_list = st.sidebar.text_input(label='Which frequencies (in Hz and space-separated) would you like to give?',
+                                                 value='30 40 50')
+    state.amplitudes_list = st.sidebar.text_input(
+        label='Which amplitudes (space-separated, as many as frequencies!) would you like to give?',
+        value='1 2 3')
+
 # create sidebar widgets
-
 st.sidebar.title("Advanced settings")
-
 # Data options
 st.sidebar.markdown("Data Options")
 
+tmin = st.sidebar.number_input(label='Starting time', min_value=0, max_value=50, value=0, key='tmin')
+
+tmax = st.sidebar.number_input(label='Ending time', min_value=tmin + 1, max_value=100, value=1, key='tmax')
+
 n = st.sidebar.number_input(
-    'resolution',
-    min_value=500,
-    max_value=5000,
-    value=1000)
+    label='Sample points. You will need twice as many sampling points per second as the frequency you want to detect.'
+          'E.g., for 2 seconds record time you need 2000 sample points to detect frequencies up to 250 Hz.',
+    min_value=50, max_value=20000, value=1000)
 
-tmin = st.sidebar.number_input('tmin',
-                               min_value=0,
-                               max_value=50,
-                               value=0)
+noise = st.sidebar.checkbox(label="Use random noise generator", value=False)
 
-tmax = st.sidebar.number_input('tmax',
-                               min_value=0,
-                               max_value=50,
-                               value=10)
+if noise:
+    sigma = st.sidebar.number_input(label='sigma', min_value=0., max_value=10000., value=0.1, key='sigma')
+else:
+    sigma = 0
 
 # Visualization Options
 st.sidebar.markdown("Visualization Options")
@@ -157,12 +47,8 @@ st.sidebar.markdown("Visualization Options")
 # Good for in-classroom use
 qr = st.sidebar.checkbox(label="Display QR Code", value=False)
 
-# for now, I will assume matplotlib always works and we dont need the Altair backend
-# backend = 'Matplotlib' #st.sidebar.selectbox(label="Backend", options=('Matplotlib', 'Altair'), index=0)
-
 ###############################################################################
 # Create main page widgets
-
 if qr:
     tcol1, tcol2 = st.columns(2)
     with tcol1:
@@ -174,24 +60,63 @@ if qr:
 else:
     st.title('Demonstration of Discrete Fourier Transformation')
 
-col1, col2, col3 = st.columns(3)
-with col1:
-    file_input = st.file_uploader(
-        label='input your file')  # , type=None, accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, *, disabled=False, label_visibility="visible")
-    # st.text_input(label='input your function',
-    #                        value='0.2*x**2 + 0.5 - x*math.sin(x)',
-    #                        help='''type e.g. 'math.sin(x)' to generate a sine function''')
+#######################
+# Initialize the plot #
+#######################
 
-# initialize the Matplotlib figure and initialize an empty dict of plot handles
-if 'mpl_fig' not in st.session_state:
-    st.session_state.mpl_fig, st.session_state.axes = plt.subplots(1, 2, figsize=(8, 3))
+handles = {}
+fig, ax = plt.subplots(1, 2)
+ax1 = fig.axes[0]
+ax2 = fig.axes[1]
 
-if 'handles' not in st.session_state:
-    st.session_state.handles = {}
+# calculate data
+dt = (tmax - tmin) / n
+if not file_input:
+    tspan = np.arange(tmin, tmax, dt)
+    flist = [float(x) for x in state.frequency_list.split(' ')]
+    alist = [float(x) for x in state.amplitudes_list.split(' ')]
+    at = np.zeros(len(tspan))
+    for i in np.arange(len(flist)):
+        at += alist[i] * np.sin(2 * np.pi * flist[i] * tspan)
+    if noise:
+        at = np.random.normal(at, sigma, len(tspan))
+else:
+    rate, data = wav.read(wavfile)
+    tspan = np.arange(tmin, tmax, 1 / rate)
+    nstart = tmin * rate
+    nend = tmax * rate
+    at = data[nstart:nend]
+    # fourierTransform = fft(data)
 
-time_scaled_x = np.linspace(0, n)
-time_scaled_y = np.exp(2j * np.pi * time_scaled_x / 8)
+# plot the time domain
+handles["timescale"] = ax1.plot(tspan, at,
+                                color='b',
+                                linewidth=0.4,
+                                label='timescale')[0]
+ax1.set_title('Time Domain')
+ax1.set_xlabel('Time (s)', horizontalalignment='right', x=1)
+ax1.set_ylabel('Amplitude', horizontalalignment='right', x=0, y=1)
+ax1.set_xlim([tmin, tmax])
+# ax1.set_ylim([-a1 - a2 - a3, a1 + a2 + a3])
 
-# update plot
-update_plot(time_scaled_x, time_scaled_y)
-st.pyplot(st.session_state.mpl_fig)
+# scale_to_frequency
+fourierTransform = np.fft.fft(at) / len(at)  # Normalize amplitude
+fourierTransform = fourierTransform[range(int(np.ceil(len(at) / 2)))]  # Exclude sampling frequency
+tpCount = len(at)
+timePeriod = tmax - tmin
+values = np.arange(tpCount / 2)
+freq = values / timePeriod
+
+# plot f and append the plot handle
+handles["frequencyscale"] = ax2.plot(freq, abs(fourierTransform.real), freq, abs(fourierTransform.imag))
+ax2.set_title('Frequency Domain')
+ax2.set_xlabel('Frequency (Hz)', horizontalalignment='right', x=1)
+# ax2.set_ylabel('Amplitude', horizontalalignment='right', x=1, y=1)
+ax2.yaxis.tick_right()
+ax2.set_xlim([0, max(freq) / 2])
+# add legend to frequencies
+ax2.legend(["Real Frequency", "Imaginary Frequency"], loc='upper right')
+# make all changes visible
+fig.canvas.draw()
+
+st.pyplot(fig)
