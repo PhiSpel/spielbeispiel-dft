@@ -118,6 +118,9 @@ with st.expander('Plot with true sound', expanded=True):
     st.pyplot(fig)
 
 with st.expander('Added random noise'):
+    col1, col2 = st.columns([1,3])
+    with col1:
+        sigma = st.number_input(label='sigma', min_value=0., max_value=10000., value=0.1, key='sigma')
     at_noise = np.random.normal(at, sigma, len(tspan))
     fourierTransform_noise, freq = calculate_fft(at_noise, tmin, tmax)
     fourierTransform_noise_plot = fourierTransform_noise[range(int(np.ceil(len(at_noise) / 2)))]  # Exclude sampling frequency
@@ -126,9 +129,6 @@ with st.expander('Added random noise'):
     handles["frequencyscale"][0].set_ydata(abs(fourierTransform_noise_plot.real))
     handles["frequencyscale"][1].set_ydata(abs(fourierTransform_noise_plot.imag))
     fig.canvas.draw()
-    col1, col2 = st.columns([1,3])
-    with col1:
-        sigma = st.number_input(label='sigma', min_value=0., max_value=10000., value=0.1, key='sigma')
     with col2:
         st.audio(at_noise, sample_rate=rate)
     st.pyplot(fig)
