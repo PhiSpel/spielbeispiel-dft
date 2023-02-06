@@ -150,8 +150,11 @@ with st.expander('Filtered plot'):
     # fourierTransform_filtered[freq > 1000] = 0
     fourierTransform_filtered_plot = fourierTransform_filtered[range(len(freq))]  # Exclude sampling frequency
     at_filtered = np.fft.ifft(fourierTransform_filtered)#, n=len(tspan))
+    st.write(at_filtered)
+    
+    # update plots
     handles["timescale"].set_ydata(at_filtered.real)
-    handles["timescale2"] = ax1.plot(tspan, at_filtered.imag, color='b', linewidth=0.4, label='real')[0]
+    handles["timescale2"] = ax1.plot(tspan, at_filtered.imag, color='o', linewidth=0.4)[0]
     ax1.legend(["Real Frequency", "Imaginary Frequency"], loc='upper right')
     handles["frequencyscale"][0].set_ydata(abs(fourierTransform_filtered_plot.real))
     handles["frequencyscale"][1].set_ydata(abs(fourierTransform_filtered_plot.imag))
