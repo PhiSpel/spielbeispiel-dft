@@ -67,7 +67,7 @@ else:
 #######################
 
 handles = {}
-fig, ax = plt.subplots(1, 2, figsize=(1, 1))
+fig, ax = plt.subplots(1, 2, figsize=(10, 5))
 ax1 = fig.axes[0]
 ax2 = fig.axes[1]
 
@@ -139,6 +139,7 @@ if wavfile:
 fourierTransform_filtered[fourierTransform_filtered < cap*max(fourierTransform_filtered)] = 0
 st.write('Filtered tune capping off all frequencies with an amplitude below an amplitude of ' + str(cap))
 at_filtered = np.fft.ifft(fourierTransform_filtered)
+st.write(str(at_filtered))
 fourierTransform_filtered_plot = fourierTransform_filtered[range(int(np.ceil(len(at) / 2)))]  # Exclude sampling frequency
 handles["timescale"].set_ydata(at_filtered.real)
 handles["frequencyscale"][0].set_ydata(abs(fourierTransform_filtered_plot.real))
