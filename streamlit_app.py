@@ -124,7 +124,7 @@ with st.expander('Added random noise'):
     fourierTransform_noise, freq = calculate_fft(at_noise, tmin, tmax)
     fourierTransform_noise_plot = fourierTransform_noise[range(len(freq))]  # Exclude sampling frequency
     st.write('Disturbed tune with a random noise of ' + str(sigma))
-    handles["timescale"].set_ydata(at_noise)
+    handles["timescale"][0].set_ydata(at_noise)
     handles["frequencyscale"][0].set_ydata(abs(fourierTransform_noise_plot.real))
     handles["frequencyscale"][1].set_ydata(abs(fourierTransform_noise_plot.imag))
     fig.canvas.draw()
@@ -151,8 +151,8 @@ with st.expander('Filtered plot'):
     st.write(at_filtered)
     
     # update plots
-    handles["timescale"].set_ydata(at_filtered.real)
-    handles["timescale2"] = ax1.plot(tspan, at_filtered.imag)
+    handles["timescale"][0].set_ydata(at_filtered.real)
+    handles["timescale"][1] = ax1.plot(tspan, at_filtered.imag)
     ax1.legend(["Real Frequency", "Imaginary Frequency"], loc='upper right')
     handles["frequencyscale"][0].set_ydata(abs(fourierTransform_filtered_plot.real))
     handles["frequencyscale"][1].set_ydata(abs(fourierTransform_filtered_plot.imag))
