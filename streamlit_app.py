@@ -143,7 +143,7 @@ with st.expander('Filtered plot'):
     fourierTransform_filtered = fourierTransform_noise
     if wavfile:
         fourierTransform_filtered = fourierTransform
-    fourierTransform_fitered = fourierTransform_filtered[range(int(np.ceil(len(at) / 2)))]  # Exclude sampling frequency
+    fourierTransform_fitered = fourierTransform_filtered[range(int(np.ceil(len(freq) / 2)))]  # Exclude sampling frequency
     # Amplitude-wise cap-opp
     fourierTransform_filtered[fourierTransform_filtered < cap*abs(max(fourierTransform_filtered))] = 0
     # Frequency cap-off
