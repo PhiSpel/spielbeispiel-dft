@@ -154,7 +154,7 @@ with st.expander('Filtered plot'):
     
     # update plots
     handles["timescale"].set_ydata(at_filtered.real)
-    handles["timescale2"] = ax1.plot(tspan, at_filtered.imag, color='o', linewidth=0.4)[0]
+    handles["timescale2"] = ax1.plot(tspan, at_filtered.imag, color='orange', linewidth=0.4)[0]
     ax1.legend(["Real Frequency", "Imaginary Frequency"], loc='upper right')
     handles["frequencyscale"][0].set_ydata(abs(fourierTransform_filtered_plot.real))
     handles["frequencyscale"][1].set_ydata(abs(fourierTransform_filtered_plot.imag))
