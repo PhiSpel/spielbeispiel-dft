@@ -143,14 +143,13 @@ with st.expander('Filtered plot'):
     fourierTransform_filtered = fourierTransform_noise
     if wavfile:
         fourierTransform_filtered = fourierTransform
-    fourierTransform_fitered = fourierTransform_filtered[range(int(np.ceil(len(freq) / 4)))]  # Exclude sampling frequency
     # Amplitude-wise cap-opp
-    # fourierTransform_filtered[fourierTransform_filtered < cap*abs(max(fourierTransform_filtered))] = 0
+    fourierTransform_filtered[np.absolute(fourierTransform_filtered) < cap*max(np.absolute(fourierTransform_filtered))] = 0
     # Frequency cap-off
-    fourierTransform_filtered[freq > 1000] = 0
+    # fourierTransform_filtered[freq > 1000] = 0
     st.write('Filtered tune capping off all frequencies with an amplitude below an amplitude of ' + str(cap))
     at_filtered = np.fft.ifft(fourierTransform_filtered, n=len(tspan))
-    fourierTransform_filtered_plot = fourierTransform_filtered
+    fourierTransform_filtered_plot = fourierTransform_filtered[range(int(np.ceil(len(freq) / 2)))]  # Exclude sampling frequency
     handles["timescale"].set_ydata(at_filtered.imag)
     handles["timescale2"] = ax1.plot(tspan, at_filtered.real, color='b', linewidth=0.4, label='real')[0]
     handles["frequencyscale"][0].set_ydata(abs(fourierTransform_filtered_plot.real))
