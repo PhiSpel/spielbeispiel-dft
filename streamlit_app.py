@@ -36,9 +36,9 @@ state.amplitudes_list = st.sidebar.text_input(
 st.sidebar.subheader('Upload a file')
 wavfile = st.sidebar.file_uploader('Your file', accept_multiple_files=False, key='mp3file', type=['mp3', 'wav'], label_visibility='hidden')
 
-tlim = st.sidebar.number_input('Maximum time', min_value=0., max_value=100., step=0.1, value=10.)
+tlim = st.sidebar.number_input('Maximum time', min_value=0., max_value=100., step=0.1, value=5.)
 
-[tmin, tmax] = st.sidebar.slider('Select the time range', 0., tlim, (0., 1.), step=0.1)
+[tmin, tmax] = st.sidebar.slider('Select the time range', 0., tlim, (0., 0.5), step=0.05)
 
 rate = st.sidebar.number_input(
     label='Sample points per second.', min_value=100, max_value=40000, value=4000,
@@ -138,10 +138,10 @@ if wavfile:
     fourierTransform_filtered = fourierTransform
 fourierTransform_filtered[fourierTransform_filtered < cap*max(fourierTransform_filtered)] = 0
 st.write('Filtered tune capping off all frequencies with an amplitude below an amplitude of ' + str(cap))
-at_filtered = np.fft.ifft(fourierTransform_filtered)
+at_filtered = np.fft.ifft(fourierTransform_filtered, n=len(tspan))
 st.write(str(at_filtered))
 fourierTransform_filtered_plot = fourierTransform_filtered[range(int(np.ceil(len(at) / 2)))]  # Exclude sampling frequency
-handles["timescale"].set_ydata(at_filtered.real)
+handles["timescale"].set_ydata(np.absolute(at_filtered)
 handles["frequencyscale"][0].set_ydata(abs(fourierTransform_filtered_plot.real))
 handles["frequencyscale"][1].set_ydata(abs(fourierTransform_filtered_plot.imag))
 fig.canvas.draw()
