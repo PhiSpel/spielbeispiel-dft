@@ -58,7 +58,7 @@ with st.expander('Input your sound parameters'):
         state.amplitudes_list = st.sidebar.text_input(
             label='Which amplitudes (space-separated, as many as frequencies!) would you like to give?',
             value='3 5 3')
-    [tmin, tmax] = st.slider('Select the time range to be analyzed', 0., tlim, (0.5, 0.7))
+    [tmin, tmax] = st.slider('Select the time range to be analyzed', 0., tlim, (0.5, 0.6))
 
 #######################
 # Initialize the plot #
