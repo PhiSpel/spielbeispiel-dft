@@ -25,31 +25,27 @@ def calculate_fft(dataset, start, end):
 # main
 ###############################################################################
 
-wavfile = st.sidebar.file_uploader(
-    label='input your file', accept_multiple_files=False, key='mp3file', type=['mp3', 'wav'])
-if not wavfile:
-    state.frequency_list = st.sidebar.text_input(
-        label='Which frequencies (in Hz and space-separated) would you like to give?',
-        value='300 400 500')
-    state.amplitudes_list = st.sidebar.text_input(
-        label='Which amplitudes (space-separated, as many as frequencies!) would you like to give?',
-        value='3 5 3')
+st.sidebar.subheader('Input your own sound parameters')
+state.frequency_list = st.sidebar.text_input(
+    label='Which frequencies (in Hz and space-separated) would you like to give?',
+    value='300 400 500')
+state.amplitudes_list = st.sidebar.text_input(
+    label='Which amplitudes (space-separated, as many as frequencies!) would you like to give?',
+    value='3 5 3')
 
-# create sidebar widgets
-st.sidebar.title("Advanced settings")
-# Data options
-st.sidebar.markdown("Data Options")
+st.sidebar.subheader('Upload a file')
+wavfile = st.sidebar.file_uploader('Your file', accept_multiple_files=False, key='mp3file', type=['mp3', 'wav'], label_visibility='hidden')
 
-tlim = st.sidebar.number_input('Maximum time', min_value=0., max_value=100., value=10.)
+tlim = st.sidebar.number_input('Maximum time', min_value=0., max_value=100., step=0.1, value=10.)
 
-[tmin, tmax] = st.sidebar.slider('Select the time range', 0., tlim, (0., 1.))
+[tmin, tmax] = st.sidebar.slider('Select the time range', 0., tlim, (0., 1.), step=0.1)
 
 rate = st.sidebar.number_input(
-    label='Sample points per second.', min_value=50, max_value=20000, value=1000,
+    label='Sample points per second.', min_value=100, max_value=40000, value=4000,
     help='You will need twice as many sampling points per second as the frequency you want to detect.')
 n = (tmax - tmin) * rate
 
-noise = st.sidebar.checkbox(label="Use random noise generator", value=False)
+# noise = st.sidebar.checkbox(label="Use random noise generator", value=False)
 
 sigma = st.sidebar.number_input(label='sigma', min_value=0., max_value=10000., value=0.1, key='sigma')
 
@@ -71,7 +67,7 @@ else:
 #######################
 
 handles = {}
-fig, ax = plt.subplots(1, 2, figsize=(5, 5))
+fig, ax = plt.subplots(1, 2, figsize=(1, 1))
 ax1 = fig.axes[0]
 ax2 = fig.axes[1]
 
@@ -119,33 +115,35 @@ fig.canvas.draw()
     #at = at / max(at)
 st.write('Clear tune')
 st.audio(at, sample_rate=rate)
-st.pyplot(fig)
-
-if noise:
-    at_noise = np.random.normal(at, sigma, len(tspan))
-    fourierTransform_noise, freq = calculate_fft(at_noise, tmin, tmax)
-    fourierTransform_noise_plot = fourierTransform_noise[range(int(np.ceil(len(at_noise) / 2)))]  # Exclude sampling frequency
-    st.write('Disturbed tune with a random noise of ' + str(sigma))
-    handles["timescale"].set_ydata(at_noise)
-    handles["frequencyscale"][0].set_ydata(abs(fourierTransform_noise_plot.real))
-    handles["frequencyscale"][1].set_ydata(abs(fourierTransform_noise_plot.imag))
-    fig.canvas.draw()
-    st.audio(at_noise, sample_rate=rate)
+with st.expander('Plot with true sound', expanded=True):
     st.pyplot(fig)
 
-if noise or wavfile:
-    cap = st.sidebar.number_input('Cap for filter', min_value=0.01, max_value=0.99)
-    if noise:
-        fourierTransform_filtered = fourierTransform_noise
-    else:
-        fourierTransform_filtered = fourierTransform
-    fourierTransform_filtered[fourierTransform_filtered < cap*max(fourierTransform_filtered)] = 0
-    st.write('Filtered tune capping off all frequencies with an amplitude below an amplitude of ' + str(cap))
-    at_filtered = np.fft.ifft(fourierTransform_filtered)
-    fourierTransform_filtered_plot = fourierTransform_filtered[range(int(np.ceil(len(at) / 2)))]  # Exclude sampling frequency
-    handles["timescale"].set_ydata(at_filtered.real)
-    handles["frequencyscale"][0].set_ydata(abs(fourierTransform_filtered_plot.real))
-    handles["frequencyscale"][1].set_ydata(abs(fourierTransform_filtered_plot.imag))
-    fig.canvas.draw()
-    st.audio(at_filtered, sample_rate=rate)
+# if noise:
+at_noise = np.random.normal(at, sigma, len(tspan))
+fourierTransform_noise, freq = calculate_fft(at_noise, tmin, tmax)
+fourierTransform_noise_plot = fourierTransform_noise[range(int(np.ceil(len(at_noise) / 2)))]  # Exclude sampling frequency
+st.write('Disturbed tune with a random noise of ' + str(sigma))
+handles["timescale"].set_ydata(at_noise)
+handles["frequencyscale"][0].set_ydata(abs(fourierTransform_noise_plot.real))
+handles["frequencyscale"][1].set_ydata(abs(fourierTransform_noise_plot.imag))
+fig.canvas.draw()
+st.audio(at_noise, sample_rate=rate)
+with st.expander('Plot with added noise'):
+    st.pyplot(fig)
+
+# if noise or wavfile:
+cap = st.sidebar.number_input('Cap for filter', min_value=0.01, max_value=0.99)
+fourierTransform_filtered = fourierTransform_noise
+if wavfile:
+    fourierTransform_filtered = fourierTransform
+fourierTransform_filtered[fourierTransform_filtered < cap*max(fourierTransform_filtered)] = 0
+st.write('Filtered tune capping off all frequencies with an amplitude below an amplitude of ' + str(cap))
+at_filtered = np.fft.ifft(fourierTransform_filtered)
+fourierTransform_filtered_plot = fourierTransform_filtered[range(int(np.ceil(len(at) / 2)))]  # Exclude sampling frequency
+handles["timescale"].set_ydata(at_filtered.real)
+handles["frequencyscale"][0].set_ydata(abs(fourierTransform_filtered_plot.real))
+handles["frequencyscale"][1].set_ydata(abs(fourierTransform_filtered_plot.imag))
+fig.canvas.draw()
+st.audio(at_filtered, sample_rate=rate)
+with st.expander('Filtered plot'):
     st.pyplot(fig)
