@@ -28,7 +28,7 @@ def calculate_fft(dataset, start, end):
 st.sidebar.subheader('Upload a file')
 wavfile = st.sidebar.file_uploader('Your file', accept_multiple_files=False, key='mp3file', type=['mp3', 'wav'], label_visibility='collapsed')
 
-tlim = st.sidebar.number_input('Maximum time', min_value=0., max_value=100., step=0.1, value=5.)
+tlim = st.sidebar.number_input('Maximum time', min_value=0., max_value=100., step=0.1, value=2.)
 
 rate = st.sidebar.number_input(
     label='Sample points per second.', min_value=100, max_value=40000, value=4000,
@@ -58,7 +58,7 @@ with st.expander('Input your sound parameters'):
         state.amplitudes_list = st.sidebar.text_input(
             label='Which amplitudes (space-separated, as many as frequencies!) would you like to give?',
             value='3 5 3')
-    [tmin, tmax] = st.slider('Select the time range to be analyzed', 0., tlim, (1., 1.5), step=0.05)
+    [tmin, tmax] = st.slider('Select the time range to be analyzed', 0., tlim, (0.5, 0.7))
 
 #######################
 # Initialize the plot #
@@ -136,7 +136,7 @@ with st.expander('Added random noise'):
 with st.expander('Filtered plot'):
     col1, col2 = st.columns([1,3])
     with col1:
-        cap = st.number_input('Cap for filter', min_value=0.01, max_value=0.99, label_visibility='collapsed', help='Select cap-off for the filter')
+        cap = st.number_input('Cap for filter', min_value=0.01, max_value=0.99, value=0.2, label_visibility='collapsed', help='Select cap-off for the filter')
     fourierTransform_filtered = fourierTransform_noise
     if wavfile:
         fourierTransform_filtered = fourierTransform
