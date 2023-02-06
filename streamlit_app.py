@@ -98,7 +98,7 @@ ax1.set_xlim([tmin, tmax])
 
 # plot f and append the plot handle
 fourierTransform, freq = calculate_fft(at, tmin, tmax)
-fourierTransform_plot = fourierTransform[range(int(np.ceil(len(at) / 2)))]  # Exclude sampling frequency
+# fourierTransform_plot = fourierTransform[range(int(np.ceil(len(at) / 2)))]  # Exclude sampling frequency
 handles["frequencyscale"] = ax2.plot(freq, abs(fourierTransform_plot.real), freq, abs(fourierTransform_plot.imag))
 ax2.set_title('Frequency Domain')
 ax2.set_xlabel('Frequency (Hz)', horizontalalignment='right', x=1)
@@ -122,7 +122,7 @@ with st.expander('Plot with true sound', expanded=True):
 with st.expander('Added random noise'):
     col1, col2 = st.columns([1,3])
     with col1:
-        sigma = st.number_input(label='sigma', min_value=0., max_value=10000., value=0.1, key='sigma', label_visibility='collapsed', help='Select sigma of the randomized noise')
+        sigma = st.number_input(label='sigma', min_value=0., max_value=10000., value=4., step=0.1, key='sigma', label_visibility='collapsed', help='Select sigma of the randomized noise')
     at_noise = np.random.normal(at, sigma, len(tspan))
     fourierTransform_noise, freq = calculate_fft(at_noise, tmin, tmax)
     fourierTransform_noise_plot = fourierTransform_noise[range(int(np.ceil(len(at_noise) / 2)))]  # Exclude sampling frequency
@@ -146,7 +146,7 @@ with st.expander('Filtered plot'):
     fourierTransform_filtered[np.absolute(fourierTransform_filtered) < cap*abs(max(fourierTransform_filtered))] = 0
     st.write('Filtered tune capping off all frequencies with an amplitude below an amplitude of ' + str(cap))
     at_filtered = np.fft.ifft(fourierTransform_filtered, n=len(tspan))
-    fourierTransform_filtered_plot = fourierTransform_filtered[range(int(np.ceil(len(at) / 2)))]  # Exclude sampling frequency
+    # fourierTransform_filtered_plot = fourierTransform_filtered[range(int(np.ceil(len(at) / 2)))]  # Exclude sampling frequency
     handles["timescale"].set_ydata(at_filtered.imag)
     handles["frequencyscale"][0].set_ydata(abs(fourierTransform_filtered_plot.real))
     handles["frequencyscale"][1].set_ydata(abs(fourierTransform_filtered_plot.imag))
