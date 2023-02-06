@@ -125,7 +125,7 @@ with st.expander('Added random noise'):
         sigma = st.number_input(label='sigma', min_value=0., max_value=10000., value=4., step=0.1, key='sigma', label_visibility='collapsed', help='Select sigma of the randomized noise')
     at_noise = np.random.normal(at, sigma, len(tspan))
     fourierTransform_noise, freq = calculate_fft(at_noise, tmin, tmax)
-    fourierTransform_noise_plot = fourierTransform_noise[range(int(np.ceil(len(at_noise) / 2)))]  # Exclude sampling frequency
+    fourierTransform_noise_plot = fourierTransform_noise[range(len(freq))]  # Exclude sampling frequency
     st.write('Disturbed tune with a random noise of ' + str(sigma))
     handles["timescale"].set_ydata(at_noise)
     handles["frequencyscale"][0].set_ydata(abs(fourierTransform_noise_plot.real))
@@ -149,7 +149,7 @@ with st.expander('Filtered plot'):
     # fourierTransform_filtered[freq > 1000] = 0
     st.write('Filtered tune capping off all frequencies with an amplitude below an amplitude of ' + str(cap))
     at_filtered = np.fft.ifft(fourierTransform_filtered, n=len(tspan))
-    fourierTransform_filtered_plot = fourierTransform_filtered[range(int(np.ceil(len(freq) / 2)))]  # Exclude sampling frequency
+    fourierTransform_filtered_plot = fourierTransform_filtered[range(len(freq))]  # Exclude sampling frequency
     handles["timescale"].set_ydata(at_filtered.imag)
     handles["timescale2"] = ax1.plot(tspan, at_filtered.real, color='b', linewidth=0.4, label='real')[0]
     handles["frequencyscale"][0].set_ydata(abs(fourierTransform_filtered_plot.real))
