@@ -33,7 +33,6 @@ tlim = st.sidebar.number_input('Maximum time', min_value=0., max_value=100., ste
 rate = st.sidebar.number_input(
     label='Sample points per second.', min_value=100, max_value=40000, value=4000,
     help='You will need twice as many sampling points per second as the frequency you want to detect.')
-n = (tmax - tmin) * rate
 
 ###############################################################################
 # Create main page widgets
@@ -72,6 +71,7 @@ ax2 = fig.axes[1]
 
 # calculate data
 dt = 1 / rate
+n = (tmax - tmin) * rate
 if wavfile:
     rate, data = wav.read(wavfile)
     tspan = np.arange(tmin, tmax, 1 / rate)
