@@ -26,7 +26,7 @@ def calculate_fft(dataset, start, end):
 ###############################################################################
 
 st.sidebar.subheader('Upload a file')
-wavfile = st.sidebar.file_uploader('Your file', accept_multiple_files=False, key='mp3file', type=['mp3', 'wav'], label_visibility='hidden')
+wavfile = st.sidebar.file_uploader('Your file', accept_multiple_files=False, key='mp3file', type=['mp3', 'wav'], label_visibility='collapsed')
 
 tlim = st.sidebar.number_input('Maximum time', min_value=0., max_value=100., step=0.1, value=5.)
 
@@ -113,14 +113,16 @@ fig.canvas.draw()
 #if not wavfile:
     #at = at / max(at)
 st.write('Clear tune')
-st.audio(at, sample_rate=rate)
 with st.expander('Plot with true sound', expanded=True):
+    col1, col2 = st.columns([1,3])
+    with col2:
+        st.audio(at, sample_rate=rate)
     st.pyplot(fig)
 
 with st.expander('Added random noise'):
     col1, col2 = st.columns([1,3])
     with col1:
-        sigma = st.number_input(label='sigma', min_value=0., max_value=10000., value=0.1, key='sigma')
+        sigma = st.number_input(label='sigma', min_value=0., max_value=10000., value=0.1, key='sigma', label_visibility='collapsed', help='Select sigma of the randomized noise')
     at_noise = np.random.normal(at, sigma, len(tspan))
     fourierTransform_noise, freq = calculate_fft(at_noise, tmin, tmax)
     fourierTransform_noise_plot = fourierTransform_noise[range(int(np.ceil(len(at_noise) / 2)))]  # Exclude sampling frequency
@@ -137,7 +139,7 @@ with st.expander('Added random noise'):
 with st.expander('Filtered plot'):
     col1, col2 = st.columns([1,3])
     with col1:
-        cap = st.number_input('Cap for filter', min_value=0.01, max_value=0.99)
+        cap = st.number_input('Cap for filter', min_value=0.01, max_value=0.99, label_visibility='collapsed', help='Select cap-off for the filter')
     fourierTransform_filtered = fourierTransform_noise
     if wavfile:
         fourierTransform_filtered = fourierTransform
