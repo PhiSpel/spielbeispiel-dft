@@ -149,7 +149,7 @@ with st.expander('Filtered plot'):
     # fourierTransform_filtered[freq > 1000] = 0
     st.write('Filtered tune capping off all frequencies with an amplitude below an amplitude of ' + str(cap))
     at_filtered = np.fft.ifft(fourierTransform_filtered, n=len(tspan))
-    fourierTransform_filtered_plot = fourierTransform_filtered#[range(int(np.ceil(len(freq) / 2)))]  # Exclude sampling frequency
+    fourierTransform_filtered_plot = fourierTransform_filtered[range(int(np.ceil(len(freq) / 2)))]  # Exclude sampling frequency
     handles["timescale"].set_ydata(at_filtered.imag)
     handles["timescale2"] = ax1.plot(tspan, at_filtered.real, color='b', linewidth=0.4, label='real')[0]
     handles["frequencyscale"][0].set_ydata(abs(fourierTransform_filtered_plot.real))
