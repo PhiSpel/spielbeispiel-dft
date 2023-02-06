@@ -87,10 +87,7 @@ else:
         at += alist[i] * np.sin(2 * np.pi * flist[i] * tspan)
 
 # plot the time domain
-handles["timescale"] = ax1.plot(tspan, at,
-                                color='b',
-                                linewidth=0.4,
-                                label='timescale')[0]
+handles["timescale"] = ax1.plot(tspan, at)
 ax1.set_title('Time Domain')
 ax1.set_xlabel('Time (s)', horizontalalignment='right', x=1)
 ax1.set_ylabel('Amplitude', horizontalalignment='right', x=0, y=1)
@@ -150,11 +147,12 @@ with st.expander('Filtered plot'):
     # fourierTransform_filtered[freq > 1000] = 0
     fourierTransform_filtered_plot = fourierTransform_filtered[range(len(freq))]  # Exclude sampling frequency
     at_filtered = np.fft.ifft(fourierTransform_filtered)#, n=len(tspan))
+    at_filtered = at_filtered / max(at_filtered) * max(at_noise)
     st.write(at_filtered)
     
     # update plots
     handles["timescale"].set_ydata(at_filtered.real)
-    handles["timescale2"] = ax1.plot(tspan, at_filtered.imag, color='orange', linewidth=0.4)[0]
+    handles["timescale2"] = ax1.plot(tspan, at_filtered.imag)
     ax1.legend(["Real Frequency", "Imaginary Frequency"], loc='upper right')
     handles["frequencyscale"][0].set_ydata(abs(fourierTransform_filtered_plot.real))
     handles["frequencyscale"][1].set_ydata(abs(fourierTransform_filtered_plot.imag))
