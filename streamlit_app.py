@@ -36,19 +36,18 @@ st.sidebar.title("Advanced settings")
 # Data options
 st.sidebar.markdown("Data Options")
 
-[tmin, tmax] = st.sidebar.slider('Select the time range', 0., 50., (0., 1.))
+tlim = st.sidebar.number_input('Maximum time', min_value=0., max_value=100., value=10.)
+
+[tmin, tmax] = st.sidebar.slider('Select the time range', 0., tlim, (0., 1.))
 
 rate = st.sidebar.number_input(
     label='Sample points per second.', min_value=50, max_value=20000, value=1000,
-    help=' You will need twice as many sampling points per second as the frequency you want to detect.')
+    help='You will need twice as many sampling points per second as the frequency you want to detect.')
 n = (tmax - tmin) * rate
 
 noise = st.sidebar.checkbox(label="Use random noise generator", value=False)
 
-if noise:
-    sigma = st.sidebar.number_input(label='sigma', min_value=0., max_value=10000., value=0.1, key='sigma')
-else:
-    sigma = 0
+sigma = st.sidebar.number_input(label='sigma', min_value=0., max_value=10000., value=0.1, key='sigma')
 
 # Visualization Options
 st.sidebar.markdown("Visualization Options")
@@ -125,7 +124,7 @@ st.audio(at, sample_rate=rate)
 st.pyplot(fig)
 
 if noise:
-    at_noise = np.random.normal(at, sigma, len(tspan))
+    at_noise = np.add(at, np.random.normal(np.zeros(len(at)), sigma, len(tspan)))
     fourierTransform_noise, freq = calculate_fft(at_noise, tmin, tmax)
     fourierTransform_noise_plot = fourierTransform_noise[range(int(np.ceil(len(at_noise) / 2)))]  # Exclude sampling frequency
     st.write('Disturbed tune with a random noise of ' + str(sigma))
@@ -143,7 +142,7 @@ if noise or wavfile:
     else:
         fourierTransform_filtered = fourierTransform
     fourierTransform_filtered[fourierTransform_filtered < cap*max(fourierTransform_filtered)] = 0
-    st.write('Filtered tune capping off all frequencies with an amplitude below ' + str(100 * cap) + str(fourierTransform_filtered[abs(fourierTransform_filtered) < cap]))
+    st.write('Filtered tune capping off all frequencies with an amplitude below an amplitude of ' + str(cap))
     at_filtered = np.fft.ifft(fourierTransform_filtered)
     fourierTransform_filtered_plot = fourierTransform_filtered[range(int(np.ceil(len(at) / 2)))]  # Exclude sampling frequency
     handles["timescale"].set_ydata(at_filtered.real)
