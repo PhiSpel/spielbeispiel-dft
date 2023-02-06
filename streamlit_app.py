@@ -141,7 +141,7 @@ st.write('Filtered tune capping off all frequencies with an amplitude below an a
 at_filtered = np.fft.ifft(fourierTransform_filtered, n=len(tspan))
 st.write(str(at_filtered))
 fourierTransform_filtered_plot = fourierTransform_filtered[range(int(np.ceil(len(at) / 2)))]  # Exclude sampling frequency
-handles["timescale"].set_ydata(np.absolute(at_filtered)
+handles["timescale"].set_ydata(np.absolute(at_filtered))
 handles["frequencyscale"][0].set_ydata(abs(fourierTransform_filtered_plot.real))
 handles["frequencyscale"][1].set_ydata(abs(fourierTransform_filtered_plot.imag))
 fig.canvas.draw()
