@@ -71,7 +71,7 @@ else:
 #######################
 
 handles = {}
-fig, ax = plt.subplots(1, 2)
+fig, ax = plt.subplots(1, 2, figsize=(5, 5))
 ax1 = fig.axes[0]
 ax2 = fig.axes[1]
 
@@ -122,7 +122,7 @@ st.audio(at, sample_rate=rate)
 st.pyplot(fig)
 
 if noise:
-    at_noise = np.add(at, np.random.normal(np.zeros(len(at)), sigma, len(tspan)))
+    at_noise = np.random.normal(at, sigma, len(tspan))
     fourierTransform_noise, freq = calculate_fft(at_noise, tmin, tmax)
     fourierTransform_noise_plot = fourierTransform_noise[range(int(np.ceil(len(at_noise) / 2)))]  # Exclude sampling frequency
     st.write('Disturbed tune with a random noise of ' + str(sigma))
