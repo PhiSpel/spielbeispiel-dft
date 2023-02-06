@@ -7,6 +7,11 @@ import math
 
 st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
 
+# Visualization Options
+st.sidebar.markdown("Visualization Options")
+
+# Good for in-classroom use
+qr = st.sidebar.checkbox(label="Display QR Code", value=False)
 
 def calculate_fft(dataset, start, end):
     fouriert = np.fft.fft(dataset) / len(dataset)  # Normalize amplitude
@@ -19,7 +24,6 @@ def calculate_fft(dataset, start, end):
 ###############################################################################
 # main
 ###############################################################################
-
 
 wavfile = st.sidebar.file_uploader(
     label='input your file', accept_multiple_files=False, key='mp3file', type=['mp3', 'wav'])
@@ -48,12 +52,6 @@ n = (tmax - tmin) * rate
 noise = st.sidebar.checkbox(label="Use random noise generator", value=False)
 
 sigma = st.sidebar.number_input(label='sigma', min_value=0., max_value=10000., value=0.1, key='sigma')
-
-# Visualization Options
-st.sidebar.markdown("Visualization Options")
-
-# Good for in-classroom use
-qr = st.sidebar.checkbox(label="Display QR Code", value=False)
 
 ###############################################################################
 # Create main page widgets
@@ -117,8 +115,8 @@ ax2.legend(["Real Frequency", "Imaginary Frequency"], loc='upper right')
 # make all changes visible
 fig.canvas.draw()
 
-if not wavfile:
-    at = at / max(at)
+#if not wavfile:
+    #at = at / max(at)
 st.write('Clear tune')
 st.audio(at, sample_rate=rate)
 st.pyplot(fig)
