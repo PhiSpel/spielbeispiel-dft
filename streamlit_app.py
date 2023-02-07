@@ -23,8 +23,8 @@ def calculate_fft(dataset, start, end):
 
 def process_wavfile(tmin, tmax, rate, data):
     tspan = np.arange(tmin, tmax, 1 / rate)
-    nstart = math.floor(tmin * rate)
-    nend = math.ceil(tmax * rate)
+    nstart = math.floor(tspan[0] * rate)
+    nend = math.ceil(tspan[-1] * rate)
     at = data[nstart:nend]
     return tspan, at
 
@@ -111,7 +111,7 @@ ax1.set_xlim([tmin, tmax])
 
 # plot f and append the plot handle
 fourierTransform, freq = calculate_fft(at, tmin, tmax)
-fourierTransform_plot = fourierTransform[range(int(np.ceil(len(at) / 2)))]  # Exclude sampling frequency
+fourierTransform_plot = fourierTransform[range(math.ceil(len(at) / 2))]  # Exclude sampling frequency
 handles["frequencyscale"] = ax2.plot(freq, abs(fourierTransform_plot.real), freq, abs(fourierTransform_plot.imag))
 ax2.set_title('Frequency Domain')
 ax2.set_xlabel('Frequency (Hz)', horizontalalignment='right', x=1)
@@ -133,7 +133,10 @@ with st.expander('Plot with true sound', expanded=True):
 with st.expander('Added random noise'):
     col1, col2 = st.columns([1,3])
     with col1:
-        sigma = st.number_input(label='sigma', min_value=0., max_value=10000., value=4., step=0.1, key='sigma', label_visibility='collapsed', help='Select sigma of the randomized noise')
+        if default_wavfile:
+            sigma = st.number_input(label='sigma', min_value=0, max_value=40000, value=4000, step=100, key='sigma', label_visibility='collapsed', help='Select sigma of the randomized noise')
+        else:
+            sigma = st.number_input(label='sigma', min_value=0., max_value=10000., value=4., step=0.1, key='sigma', label_visibility='collapsed', help='Select sigma of the randomized noise')
     at_noise = np.random.normal(at, sigma, len(tspan))
     fourierTransform_noise, freq = calculate_fft(at_noise, tmin, tmax)
     fourierTransform_noise_plot = fourierTransform_noise[range(len(freq))]  # Exclude sampling frequency
