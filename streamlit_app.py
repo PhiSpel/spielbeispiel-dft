@@ -70,9 +70,6 @@ with st.expander('Input your sound parameters'):
     [tmin, tmax] = st.slider('Select the time range to be analyzed', 0., tlim, (0.5, 0.6))
     with col3:
         default_wavfile = st.checkbox('Show me Stars')
-        if default_wavfile:
-            wavfile = wav.read('StarWars60.wav')
-            [tmin, tmax] = [0., 3.]
 
 #######################
 # Initialize the plot #
@@ -87,8 +84,11 @@ ax2 = fig.axes[1]
 dt = 1 / rate
 n = (tmax - tmin) * rate
 if wavfile:
-    if not default_wavfile:
-        rate, data = wav.read(wavfile)
+    rate, data = wav.read(wavfile)
+    read_wavfile()
+elif default_wavfile:
+    rate, data = wav.read('StarWars60.wav')
+    [tmin, tmax] = [0., 3.]
     read_wavfile()
 else:
     tspan = np.arange(tmin, tmax, dt)
