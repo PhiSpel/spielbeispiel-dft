@@ -47,10 +47,10 @@ rate = st.sidebar.number_input(
 # Create main page widgets
 ###############################################################################
 if qr:
-    tcol1, tcol2 = st.columns(2)
-    with tcol1:
+    col1, col2 = st.columns(2)
+    with col1:
         st.title('Demonstration of Discrete Fourier Transformation')
-    with tcol2:
+    with col2:
         st.markdown('## <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data='
                     'https://share.streamlit.io/PhiSpel/spielbeispiel-dft/main" width="200"/>',
                     unsafe_allow_html=True)
@@ -58,7 +58,7 @@ else:
     st.title('Demonstration of Discrete Fourier Transformation')
 
 with st.expander('Input your sound parameters'):
-    col1, col2, col3 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         state.frequency_list = st.text_input(
             label='Which frequencies (in Hz and space-separated) would you like to give?',
