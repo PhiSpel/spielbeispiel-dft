@@ -22,8 +22,6 @@ def calculate_fft(dataset, start, end):
     return fouriert, frequencies
 
 def process_wavfile(tmin, tmax, rate, data):
-    tmin = 0
-    tmax = 1
     tspan = np.arange(tmin, tmax, 1 / rate)
     nstart = math.floor(tmin * rate)
     nend = math.ceil(tmax * rate)
@@ -71,9 +69,12 @@ with st.expander('Input your sound parameters'):
             label='Amplitudes',
             help='Which amplitudes (space-separated, as many as frequencies!) would you like to give?',
             value='3 5 3')
-    [tmin, tmax] = st.slider('Select the time range to be analyzed', 0., tlim, (0.5, 0.6))
     with col3:
         default_wavfile = st.checkbox('Show me Stars')
+    if default_wavfile:
+        [tmin, tmax] = st.slider('Select the time range to be analyzed', 0., tlim, (0., 3.))
+    else:
+        [tmin, tmax] = st.slider('Select the time range to be analyzed', 0., tlim, (0.5, 0.6))
 
 #######################
 # Outputs #
@@ -92,7 +93,6 @@ if wavfile:
     tspan, at = process_wavfile(tmin, tmax, rate, data)
 elif default_wavfile:
     rate, data = wav.read('StarWars60.wav')
-    [tmin, tmax] = [0., 3.]
     tspan, at = process_wavfile(tmin, tmax, rate, data)
 else:
     tspan = np.arange(tmin, tmax, dt)
