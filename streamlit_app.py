@@ -4,6 +4,7 @@ import numpy as np
 from scipy.io import wavfile as wav
 import matplotlib.pyplot as plt
 import math
+import wave
 
 st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
 
@@ -21,13 +22,21 @@ def calculate_fft(dataset, start, end):
     frequencies = values / timeperiod
     return fouriert, frequencies
 
+def read_wavfile():
+    rate, data = wav.read(wavfile)
+    tspan = np.arange(tmin, tmax, 1 / rate)
+    nstart = math.floor(tmin * rate)
+    nend = math.ceil(tmax * rate)
+    at = data[nstart:nend]
+
 ###############################################################################
 # Sidebar
 ###############################################################################
 
 st.sidebar.subheader('Upload a file')
-wavfile = st.sidebar.file_uploader('Your file', accept_multiple_files=False, key='mp3file', type=['mp3', 'wav'], label_visibility='collapsed')
+wavfile = st.sidebar.file_uploader('Your file', accept_multiple_files=False, key='mp3file', type=['wav'], label_visibility='collapsed')
 
+st.sidebar.subheader('Advanced settings')
 tlim = st.sidebar.number_input('Maximum time', min_value=0., max_value=100., step=0.1, value=2.)
 
 rate = st.sidebar.number_input(
@@ -51,11 +60,11 @@ else:
 with st.expander('Input your sound parameters'):
     tcol1, tcol2 = st.columns(2)
     with tcol1:
-        state.frequency_list = st.sidebar.text_input(
+        state.frequency_list = st.text_input(
             label='Which frequencies (in Hz and space-separated) would you like to give?',
             value='300 400 500')
     with tcol2:
-        state.amplitudes_list = st.sidebar.text_input(
+        state.amplitudes_list = st.text_input(
             label='Which amplitudes (space-separated, as many as frequencies!) would you like to give?',
             value='3 5 3')
     [tmin, tmax] = st.slider('Select the time range to be analyzed', 0., tlim, (0.5, 0.6))
@@ -73,11 +82,7 @@ ax2 = fig.axes[1]
 dt = 1 / rate
 n = (tmax - tmin) * rate
 if wavfile:
-    rate, data = wav.read(wavfile)
-    tspan = np.arange(tmin, tmax, 1 / rate)
-    nstart = math.floor(tmin * rate)
-    nend = math.ceil(tmax * rate)
-    at = data[nstart:nend]
+    read_wavfile()
 else:
     tspan = np.arange(tmin, tmax, dt)
     flist = [float(x) for x in state.frequency_list.split(' ')]
@@ -112,6 +117,10 @@ fig.canvas.draw()
 st.write('Clear tune')
 with st.expander('Plot with true sound', expanded=True):
     col1, col2 = st.columns([1,3])
+    with col1:
+        default_wavfile = st.checkbox('Show me Stars')
+        if default_wavfile:
+            wavfile = wave.open('sine.wav', 'r')
     with col2:
         st.audio(at, sample_rate=rate)
     st.pyplot(fig)
