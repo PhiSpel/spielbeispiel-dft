@@ -87,7 +87,8 @@ ax2 = fig.axes[1]
 dt = 1 / rate
 n = (tmax - tmin) * rate
 if wavfile:
-    rate, data = wav.read(wavfile)
+    if not default_wavfile:
+        rate, data = wav.read(wavfile)
     read_wavfile()
 else:
     tspan = np.arange(tmin, tmax, dt)
