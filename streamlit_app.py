@@ -4,7 +4,6 @@ import numpy as np
 from scipy.io import wavfile as wav
 import matplotlib.pyplot as plt
 import math
-import wave
 
 st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
 
@@ -23,7 +22,6 @@ def calculate_fft(dataset, start, end):
     return fouriert, frequencies
 
 def read_wavfile():
-    rate, data = wav.read(wavfile)
     tspan = np.arange(tmin, tmax, 1 / rate)
     nstart = math.floor(tmin * rate)
     nend = math.ceil(tmax * rate)
@@ -61,17 +59,19 @@ with st.expander('Input your sound parameters'):
     col1, col2, col3 = st.columns(3)
     with col1:
         state.frequency_list = st.text_input(
-            label='Which frequencies (in Hz and space-separated) would you like to give?',
+            label='Frequencies',
+            help='Which frequencies (in Hz and space-separated) would you like to give?',
             value='300 400 500')
     with col2:
         state.amplitudes_list = st.text_input(
-            label='Which amplitudes (space-separated, as many as frequencies!) would you like to give?',
+            label='Amplitudes',
+            help='Which amplitudes (space-separated, as many as frequencies!) would you like to give?',
             value='3 5 3')
     [tmin, tmax] = st.slider('Select the time range to be analyzed', 0., tlim, (0.5, 0.6))
     with col3:
         default_wavfile = st.checkbox('Show me Stars')
         if default_wavfile:
-            wavfile = wave.open('StarWars60.wav', 'r')
+            wavfile = wav.read('StarWars60.wav')
             [tmin, tmax] = [0., 3.]
 
 #######################
@@ -87,6 +87,7 @@ ax2 = fig.axes[1]
 dt = 1 / rate
 n = (tmax - tmin) * rate
 if wavfile:
+    rate, data = wav.read(wavfile)
     read_wavfile()
 else:
     tspan = np.arange(tmin, tmax, dt)
