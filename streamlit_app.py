@@ -58,16 +58,21 @@ else:
     st.title('Demonstration of Discrete Fourier Transformation')
 
 with st.expander('Input your sound parameters'):
-    tcol1, tcol2 = st.columns(2)
-    with tcol1:
+    col1, col2, col3 = st.columns(2)
+    with col1:
         state.frequency_list = st.text_input(
             label='Which frequencies (in Hz and space-separated) would you like to give?',
             value='300 400 500')
-    with tcol2:
+    with col2:
         state.amplitudes_list = st.text_input(
             label='Which amplitudes (space-separated, as many as frequencies!) would you like to give?',
             value='3 5 3')
     [tmin, tmax] = st.slider('Select the time range to be analyzed', 0., tlim, (0.5, 0.6))
+    with col3:
+        default_wavfile = st.checkbox('Show me Stars')
+        if default_wavfile:
+            wavfile = wave.open('StarWars60.wav', 'r')
+            [tmin, tmax] = [0., 3.]
 
 #######################
 # Initialize the plot #
@@ -117,10 +122,6 @@ fig.canvas.draw()
 st.write('Clear tune')
 with st.expander('Plot with true sound', expanded=True):
     col1, col2 = st.columns([1,3])
-    with col1:
-        default_wavfile = st.checkbox('Show me Stars')
-        if default_wavfile:
-            wavfile = wave.open('sine.wav', 'r')
     with col2:
         st.audio(at, sample_rate=rate)
     st.pyplot(fig)
