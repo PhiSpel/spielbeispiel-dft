@@ -21,11 +21,12 @@ def calculate_fft(dataset, start, end):
     frequencies = values / timeperiod
     return fouriert, frequencies
 
-def read_wavfile():
+def process_wavfile(tmin, tmax, rate, data):
     tspan = np.arange(tmin, tmax, 1 / rate)
     nstart = math.floor(tmin * rate)
     nend = math.ceil(tmax * rate)
     at = data[nstart:nend]
+    return tspan, at
 
 ###############################################################################
 # Sidebar
@@ -44,6 +45,7 @@ rate = st.sidebar.number_input(
 ###############################################################################
 # Create main page widgets
 ###############################################################################
+
 if qr:
     col1, col2 = st.columns(2)
     with col1:
@@ -72,7 +74,7 @@ with st.expander('Input your sound parameters'):
         default_wavfile = st.checkbox('Show me Stars')
 
 #######################
-# Initialize the plot #
+# Outputs #
 #######################
 
 handles = {}
@@ -85,11 +87,11 @@ dt = 1 / rate
 n = (tmax - tmin) * rate
 if wavfile:
     rate, data = wav.read(wavfile)
-    read_wavfile()
+    process_wavfile(tmin, tmax, rate, data)
 elif default_wavfile:
     rate, data = wav.read('StarWars60.wav')
     [tmin, tmax] = [0., 3.]
-    read_wavfile()
+    process_wavfile(tmin, tmax, rate, data)
 else:
     tspan = np.arange(tmin, tmax, dt)
     flist = [float(x) for x in state.frequency_list.split(' ')]
@@ -119,8 +121,6 @@ ax2.legend(["Real Frequency", "Imaginary Frequency"], loc='upper right')
 # make all changes visible
 fig.canvas.draw()
 
-#if not wavfile:
-    #at = at / max(at)
 st.write('Clear tune')
 with st.expander('Plot with true sound', expanded=True):
     col1, col2 = st.columns([1,3])
@@ -144,7 +144,6 @@ with st.expander('Added random noise'):
         st.audio(at_noise, sample_rate=rate)
     st.pyplot(fig)
 
-# if noise or wavfile:
 with st.expander('Filtered plot'):
     col1, col2 = st.columns([1,3])
     with col1:
