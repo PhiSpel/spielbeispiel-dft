@@ -87,11 +87,11 @@ dt = 1 / rate
 n = (tmax - tmin) * rate
 if wavfile:
     rate, data = wav.read(wavfile)
-    process_wavfile(tmin, tmax, rate, data)
+    tspan, at = process_wavfile(tmin, tmax, rate, data)
 elif default_wavfile:
     rate, data = wav.read('StarWars60.wav')
     [tmin, tmax] = [0., 3.]
-    process_wavfile(tmin, tmax, rate, data)
+    tspan, at = process_wavfile(tmin, tmax, rate, data)
 else:
     tspan = np.arange(tmin, tmax, dt)
     flist = [float(x) for x in state.frequency_list.split(' ')]
