@@ -58,7 +58,7 @@ if qr:
 else:
     st.title('Demonstration of Discrete Fourier Transformation')
 
-with st.expander('Input your sound parameters. You can choose your own frequencies or upload a .wav file.'):
+with st.expander('Input your sound parameters. You can choose your own frequencies or upload a .wav file in the sidebar.'):
     col1, col2, col3 = st.columns(3)
     with col1:
         state.frequency_list = st.text_input(
