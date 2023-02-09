@@ -22,7 +22,7 @@ def calculate_fft(dataset, start, end):
     return fouriert, frequencies
 
 def process_wavfile(tmin, tmax, rate, data):
-    tspan = np.arange(tmin, tmax, 1 / rate)
+    tspan = range(tmin, tmax, rate)
     nstart = round(tspan[0] * rate)
     nend = round(tspan[-1] * rate)
     at = data[nstart:nend]
