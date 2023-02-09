@@ -23,7 +23,7 @@ def calculate_fft(dataset, start, end):
 
 def process_wavfile(tmin, tmax, rate, data):
     tspan = np.arange(tmin, tmax, 1 / rate)
-    nstart = math.floor(tspan[0] * rate)
+    nstart = math.ceil(tspan[0] * rate)
     nend = math.ceil(tspan[-1] * rate)
     at = data[nstart:nend]
     return tspan, at
@@ -57,7 +57,7 @@ if qr:
 else:
     st.title('Demonstration of Discrete Fourier Transformation')
 
-with st.expander('Input your sound parameters'):
+with st.expander('Input your sound parameters. You can choose your own frequencies or upload a .wav file.'):
     col1, col2, col3 = st.columns(3)
     with col1:
         state.frequency_list = st.text_input(
