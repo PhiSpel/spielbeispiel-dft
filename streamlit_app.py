@@ -23,8 +23,8 @@ def calculate_fft(dataset, start, end):
 
 def process_wavfile(tmin, tmax, rate, data):
     tspan = np.arange(tmin, tmax, 1 / rate)
-    nstart = math.ceil(tspan[0] * rate)
-    nend = math.ceil(tspan[-1] * rate)
+    nstart = round(tspan[0] * rate)
+    nend = round(tspan[-1] * rate)
     at = data[nstart:nend]
     if not len(tspan) == len(at):
         st.write("Length of tspan: " + str(len(tspan)) + ", length of at: " + str(len(at)))
