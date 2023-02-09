@@ -27,7 +27,7 @@ def process_wavfile(tmin, tmax, rate, data):
     nend = math.ceil(tspan[-1] * rate)
     at = data[nstart:nend]
     if not len(tspan) == len(at):
-        st.write("Length of tspan: " + len(tspan) + ", length of at: " + len(at)")
+        st.write("Length of tspan: " + str(len(tspan)) + ", length of at: " + str(len(at)))
     return tspan, at
 
 ###############################################################################
