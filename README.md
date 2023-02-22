@@ -1,4 +1,4 @@
-# Animation of Integration
+# Demonstration of Discrete Fourier Transform
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/PhiSpel/spielbeispiel-dft/main)
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
@@ -22,6 +22,8 @@ streamlit run streamlit_app.py
 ```
 
 Your browser should now open and display the app.
+
+The file `StarWars60.wav` is copied from [this page by UIC](https://www2.cs.uic.edu/~i101/SoundFiles/), accessed 2023-02-22.
 
 Shield: [![CC BY-SA 4.0][cc-by-sa-shield]][cc-by-sa]
 
