@@ -37,7 +37,7 @@ st.sidebar.subheader('Upload a file')
 wavfile = st.sidebar.file_uploader('Your file', accept_multiple_files=False, key='mp3file', type=['wav'], label_visibility='collapsed')
 
 st.sidebar.subheader('Advanced settings')
-tlim = st.sidebar.number_input('Maximum time', min_value=0., max_value=100., step=0.1, value=2.)
+tlim = st.sidebar.number_input('Maximum time', min_value=1., max_value=20., step=0.1, value=2.)
 
 rate = st.sidebar.number_input(
     label='Sample points per second.', min_value=100, max_value=40000, value=4000,
